@@ -9,7 +9,6 @@ const Router = require('@koa/router');
 const app = new Koa();
 const { tokenMiddleware, catchAuthError } = require('./helpers/token');
 
-// Middleware
 
 // 连接到 MongoDB 数据库
 connectDB().then(() => {
