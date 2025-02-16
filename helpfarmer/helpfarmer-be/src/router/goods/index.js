@@ -133,7 +133,7 @@
 
 const Router = require('@koa/router');
 const mongoose = require('mongoose');
-const { upload } = require('./uploadMiddleware'); // 引入 multer 中间件
+const { upload } = require('../uploadMiddleware'); // 引入 multer 中间件
 const Goods = mongoose.model('Goods');
 
 const router = new Router({
@@ -288,5 +288,37 @@ router.get('/delete/:id', async (ctx) => {
     };
   }
 });
+// 上传图片接口
+router.post('/uploadImage', upload.single('file'), async (ctx) => {
+  try {
+    if (!ctx.file) {
+      ctx.status = 400;
+      ctx.body = {
+        success: false,
+        code: 1,
+        message: '未上传文件',
+      };
+      return;
+    }
 
+    // 返回图片的 URL
+    const imageUrl = `http://localhost:3000/uploads/goods/${ctx.file.filename}`;
+    ctx.status = 200;
+    ctx.body = {
+      success: true,
+      code: 0,
+      message: '图片上传成功',
+      url: imageUrl, // 返回图片的访问路径
+    };
+  } catch (error) {
+    console.error('图片上传失败:', error);
+    ctx.status = 500;
+    ctx.body = {
+      success: false,
+      code: 1,
+      message: '图片上传失败',
+      error: error.message,
+    };
+  }
+});
 module.exports = router;
