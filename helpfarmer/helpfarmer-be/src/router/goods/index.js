@@ -220,7 +220,7 @@ router.put('/update', upload.array('images', 5), async (ctx) => {
 
     // 如果有新图片上传，更新图片路径
     if (ctx.files && ctx.files.length > 0) {
-      const newImages = ctx.files.map((file) => `uploads/goods/${file.filename}`);
+      const newImages = ctx.files.map((file) => `../../uploads/goods/${file.filename}`);
       updateFields.images = newImages;
     }
 

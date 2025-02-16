@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="demo-page-wrapper">
     <vxe-grid ref="gridRef" v-bind="gridOptions">
       <template #toolbarButtons>
@@ -159,7 +159,7 @@ const gridOptions = reactive({
           editRender: { name: 'VxeNumberInput', props: { type: 'float' } },
         },
         {
-          field: 'production',
+          field: 'farmer',
           title: '厂商',
           width: 150,
           editRender: { name: 'VxeInput' },
@@ -295,4 +295,5 @@ nextTick(() => {
 </script>
 <style lang="scss" scoped>
 @import url(./index.scss);
-</style>
+</style> 
+

@@ -20,13 +20,13 @@ const goodsSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   
   // 农户信息（发布该商品的农户）
-  farmer: { type: String, required: true },
+  farmer: { type: String },
   
   // 商品库存数量
   count: { type: Number, required: true },
   
   // 商品分类（例如：水果、蔬菜、粮食）
-  category: { type: String, required: true },
+  category: { type: String},
   
   // 是否上架（默认上架）
   flag: { type: Boolean, default: true },
