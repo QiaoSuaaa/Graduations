@@ -1,4 +1,4 @@
- <template>
+<template>
   <div class="demo-page-wrapper">
     <vxe-grid ref="gridRef" v-bind="gridOptions">
       <template #toolbarButtons>
@@ -26,7 +26,6 @@
           >保存</vxe-button
         >
       </template>
-
       <template #active="{ row }">
         <vxe-button
           mode="text"
@@ -34,6 +33,21 @@
           icon="vxe-icon-delete"
           @click="removeRow(row)"
         ></vxe-button>
+      </template>
+      <template #image="{ row }">
+        <img
+          v-if="row.imageUrl"
+          :src="row.imageUrl"
+          alt="商品图片"
+          style="width: 50px; height: 50px"
+        />
+        <vxe-button
+          mode="text"
+          status="primary"
+          icon="vxe-icon-upload"
+          @click="uploadImage(row)"
+          >上传图片</vxe-button
+        >
       </template>
     </vxe-grid>
   </div>
@@ -82,7 +96,7 @@ const gridOptions = reactive({
   rowConfig: {
     useKey: true,
     isHover: true,
-  },
+ },
   toolbarConfig: {
     custom: true,
     slots: {
@@ -159,7 +173,7 @@ const gridOptions = reactive({
           editRender: { name: 'VxeNumberInput', props: { type: 'float' } },
         },
         {
-          field: 'farmer',
+          field: 'production',
           title: '厂商',
           width: 150,
           editRender: { name: 'VxeInput' },
@@ -173,6 +187,12 @@ const gridOptions = reactive({
       cellRender: flag1CellRender,
     },
     {
+      field: 'image',
+      title: '商品图片',
+      width: 150,
+      slots: { default: 'image' }, // 使用插槽显示图片和上传按钮
+    },
+    {
       field: 'active',
       title: '操作',
       fixed: 'right',
@@ -181,8 +201,56 @@ const gridOptions = reactive({
     },
   ],
 })
-
+//上传图片
+const uploadImage = async row => {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'image/*'
+  input.onchange = async event => {
+    const file = event.target.files[0]
+    if (file) {
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+        const response = await goods.uploadImage(formData)
+        row.imageUrl = response.data.url // 更新图片 URL
+        VxeUI.modal.message({ content: '图片上传成功', status: 'success' })
+      } catch (error) {
+        console.error('图片上传失败:', error)
+        VxeUI.modal.message({ content: '图片上传失败', status: 'error' })
+      }
+    }
+  }
+  input.click()
+}
 //查找
+// const loadDataForm = async rSize => {
+//   gridOptions.loading = true
+//   try {
+//     const response = await goods.list({ pageNo: 1, pageSize: rSize })
+//     const data = response.data.data || []
+//     if (Array.isArray(data)) {
+//       const $grid = gridRef.value
+//       if ($grid) {
+//         $grid.reloadData(data)
+//       }
+//     } else {
+//       console.error('返回的数据格式错误，应为一个数组', response)
+//       VxeUI.modal.message({
+//         content: '数据格式错误，无法加载',
+//         status: 'error',
+//       })
+//     }
+//   } catch (error) {
+//     console.error('数据加载失败:', error)
+//     VxeUI.modal.message({
+//       content: '加载数据失败',
+//       status: 'error',
+//     })
+//   } finally {
+//     gridOptions.loading = false
+//   }
+// }
 const loadDataForm = async rSize => {
   gridOptions.loading = true
   try {
@@ -215,6 +283,21 @@ const changeRowSizeEvent = () => {
   loadDataForm(selectRowSize.value)
 }
 //增加空白行
+// const addEvent = async () => {
+//   const $grid = gridRef.value
+//   if ($grid) {
+//     const record = {
+//       name: '',
+//       description: '',
+//       price: '',
+//       city: '',
+//       flag: false,
+//       count: '',
+//     }
+//     const { row: newRow } = await $grid.insertAt(record, null)
+//     $grid.setPendingRow(newRow)
+//   }
+// }
 const addEvent = async () => {
   const $grid = gridRef.value
   if ($grid) {
@@ -223,8 +306,10 @@ const addEvent = async () => {
       description: '',
       price: '',
       city: '',
+      farmer: '',
       flag: false,
       count: '',
+      image: '', // 初始化图片 URL
     }
     const { row: newRow } = await $grid.insertAt(record, null)
     $grid.setPendingRow(newRow)
@@ -260,6 +345,34 @@ const removeRow = async row => {
   }
 }
 //保存，(修改，添加)
+// const saveEvent = async () => {
+//   const $grid = gridRef.value
+//   if ($grid) {
+//     const errMap = await $grid.validate(true)
+//     if (errMap) {
+//       return
+//     }
+//     const { insertRecords, updateRecords, removeRecords } = $grid.getRecordset()
+//     const pendingRecords = $grid.getPendingRecords()
+//     try {
+//       await Promise.all([
+//         ...insertRecords.map(record => goods.add(record)),
+//         ...updateRecords.map(record => goods.update(record)),
+//       ])
+//       VxeUI.modal.alert({
+//         title: '商品管理器',
+//         content: `新增：${insertRecords.length} 行，已删除：${removeRecords.length} 行，待删除：${pendingRecords.length} 行，修改：${updateRecords.length} 行`,
+//       })
+//       loadDataForm(selectRowSize.value)
+//     } catch (error) {
+//       console.error('保存失败', error)
+//       VxeUI.modal.message({
+//         content: '保存失败',
+//         status: 'error',
+//       })
+//     }
+//   }
+// }
 const saveEvent = async () => {
   const $grid = gridRef.value
   if ($grid) {
@@ -271,8 +384,28 @@ const saveEvent = async () => {
     const pendingRecords = $grid.getPendingRecords()
     try {
       await Promise.all([
-        ...insertRecords.map(record => goods.add(record)),
-        ...updateRecords.map(record => goods.update(record)),
+        ...insertRecords.map(record => {
+          const formData = new FormData()
+          for (const key in record) {
+            if (key === 'image' && record[key]) {
+              formData.append('images', record[key])
+            } else {
+              formData.append(key, record[key])
+            }
+          }
+          return goods.add(formData)
+        }),
+        ...updateRecords.map(record => {
+          const formData = new FormData()
+          for (const key in record) {
+            if (key === 'image' && record[key]) {
+              formData.append('images', record[key])
+            } else {
+              formData.append(key, record[key])
+            }
+          }
+          return goods.update(formData)
+        }),
       ])
       VxeUI.modal.alert({
         title: '商品管理器',
@@ -288,12 +421,10 @@ const saveEvent = async () => {
     }
   }
 }
-
 nextTick(() => {
   loadDataForm(selectRowSize.value)
 })
 </script>
 <style lang="scss" scoped>
 @import url(./index.scss);
-</style> 
-
+</style>
