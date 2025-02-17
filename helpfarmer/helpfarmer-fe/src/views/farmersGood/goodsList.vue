@@ -96,7 +96,7 @@ const gridOptions = reactive({
   rowConfig: {
     useKey: true,
     isHover: true,
-  },
+ },
   toolbarConfig: {
     custom: true,
     slots: {
@@ -193,6 +193,12 @@ const gridOptions = reactive({
       cellRender: flag1CellRender,
     },
     {
+      field: 'image',
+      title: '商品图片',
+      width: 150,
+      slots: { default: 'image' }, // 使用插槽显示图片和上传按钮
+    },
+    {
       field: 'active',
       title: '操作',
       fixed: 'right',
@@ -213,6 +219,7 @@ const uploadImage = async row => {
         const formData = new FormData()
         formData.append('file', file)
         const response = await goods.uploadImage(formData)
+<<<<<<< HEAD
         const imageUrl = response.data.url // 获取上传后返回的图片 URL
         row.imageUrl = imageUrl // 更新本地的商品图片 URL
         VxeUI.modal.message({ content: '图片上传成功', status: 'success' })
@@ -221,6 +228,10 @@ const uploadImage = async row => {
         console.log(imageUrl)
         // 上传成功后，保存图片 URL 到后端数据库
         row.image = imageUrl // 将图片 URL 添加到商品记录中
+=======
+        row.imageUrl = response.data.url // 更新图片 URL
+        VxeUI.modal.message({ content: '图片上传成功', status: 'success' })
+>>>>>>> a3e59f796e1522f2cfaeb82b08aa63a3f67d31d3
       } catch (error) {
         console.error('图片上传失败:', error)
         VxeUI.modal.message({ content: '图片上传失败', status: 'error' })
@@ -229,7 +240,10 @@ const uploadImage = async row => {
   }
   input.click()
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> a3e59f796e1522f2cfaeb82b08aa63a3f67d31d3
 //查找
 // const loadDataForm = async rSize => {
 //   gridOptions.loading = true
@@ -398,29 +412,49 @@ const saveEvent = async () => {
     const pendingRecords = $grid.getPendingRecords()
     try {
       await Promise.all([
+<<<<<<< HEAD
         // 新增记录
+=======
+>>>>>>> a3e59f796e1522f2cfaeb82b08aa63a3f67d31d3
         ...insertRecords.map(record => {
           const formData = new FormData()
           for (const key in record) {
             if (key === 'image' && record[key]) {
+<<<<<<< HEAD
               formData.append('images', record[key]) // 上传图片 URL
+=======
+              formData.append('images', record[key])
+>>>>>>> a3e59f796e1522f2cfaeb82b08aa63a3f67d31d3
             } else {
               formData.append(key, record[key])
             }
           }
+<<<<<<< HEAD
           return goods.add(formData) // 将商品记录保存到数据库
         }),
         // 更新记录
+=======
+          return goods.add(formData)
+        }),
+>>>>>>> a3e59f796e1522f2cfaeb82b08aa63a3f67d31d3
         ...updateRecords.map(record => {
           const formData = new FormData()
           for (const key in record) {
             if (key === 'image' && record[key]) {
+<<<<<<< HEAD
               formData.append('images', record[key]) // 上传图片 URL
+=======
+              formData.append('images', record[key])
+>>>>>>> a3e59f796e1522f2cfaeb82b08aa63a3f67d31d3
             } else {
               formData.append(key, record[key])
             }
           }
+<<<<<<< HEAD
           return goods.update(formData) // 更新商品记录
+=======
+          return goods.update(formData)
+>>>>>>> a3e59f796e1522f2cfaeb82b08aa63a3f67d31d3
         }),
       ])
       VxeUI.modal.alert({
@@ -437,7 +471,6 @@ const saveEvent = async () => {
     }
   }
 }
-
 nextTick(() => {
   loadDataForm(selectRowSize.value)
 })
