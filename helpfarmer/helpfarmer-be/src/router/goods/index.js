@@ -3,6 +3,7 @@
 const Router = require('@koa/router');
 const mongoose = require('mongoose');
 const { upload } = require('../uploadMiddleware'); // 引入 multer 中间件
+const imgUrls = require('../../db/Schema/imgUrl');
 const Goods = mongoose.model('Goods');
 
 const router = new Router({
@@ -172,6 +173,10 @@ router.post('/uploadImage', upload.single('file'), async (ctx) => {
 
     // 返回图片的 URL
     const imageUrl = `http://localhost:3000/${ctx.file.filename}`;
+    const imgs= new imgUrls({
+      filepath:imageUrl
+    })
+    const res = await imgs.save();
     ctx.status = 200;
     ctx.body = {
       success: true,
