@@ -22,9 +22,7 @@ const upload = multer({
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 },
 });
-//静态图片资源
-const staticPath = path.join(__dirname, '../uploads/goods');
+
 module.exports = {
   upload,
-  staticPath,
 };

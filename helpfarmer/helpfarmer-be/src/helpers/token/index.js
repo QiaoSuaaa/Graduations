@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken');
 const koaJWT = require('koa-jwt');
-
 // 配置项（根据项目需求调整）
 const config = require('../../projectConfig');
-
+//静态图片资源
 // 获取 Token
 
 const getToken = (ctx) => {
@@ -41,6 +40,7 @@ const tokenMiddleware = (app) => {
         /^\/auth\/register/, // 注册接口无需校验 Token
         /^\/invite\/add/, // 注册接口无需校验 Token
         /^\/character\/list/, // 身份接口无需校验 Token
+        /^\/uploads\/goods/, // 身份接口无需校验 Token
         /^\/src\/uploads\/goods/, // 身份接口无需校验 Token
       ],
     })

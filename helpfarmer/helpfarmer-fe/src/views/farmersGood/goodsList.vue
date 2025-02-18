@@ -193,12 +193,6 @@ const gridOptions = reactive({
       cellRender: flag1CellRender,
     },
     {
-      field: 'image',
-      title: '商品图片',
-      width: 150,
-      slots: { default: 'image' }, // 使用插槽显示图片和上传按钮
-    },
-    {
       field: 'active',
       title: '操作',
       fixed: 'right',
@@ -220,6 +214,8 @@ const uploadImage = async row => {
         formData.append('file', file)
         const response = await goods.uploadImage(formData)
         row.imageUrl = response.data.url // 更新图片 URL
+        console.log(row.imageUrl);
+        console.log('-000000000000000000');
         VxeUI.modal.message({ content: '图片上传成功', status: 'success' })
       } catch (error) {
         console.error('图片上传失败:', error)
