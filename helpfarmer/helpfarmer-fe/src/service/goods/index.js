@@ -1,4 +1,3 @@
-import { getToken } from '@/helpers/token'
 import instance from '../instance'
 //获取import instance from '../instance';
 
@@ -46,20 +45,10 @@ export const deletes = id => {
   return instance.get(`/goods/delete/${id}`)
 }
 // 上传图片
-<<<<<<< HEAD
 export const uploadImage = formData => {
-    return instance.post('/goods/uploadImage', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-}
-=======
-export const uploadImage = (formData) => {
   return instance.post('/goods/uploadImage', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
-  });
-};
->>>>>>> a3e59f796e1522f2cfaeb82b08aa63a3f67d31d3
+  })
+}
