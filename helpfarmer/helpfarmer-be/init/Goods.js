@@ -18,7 +18,7 @@ const initialGoods = [
     active: true,
     category: '粮食',
     certification: '有机认证',
-    images: ['uploads/goods/m1.jpg', 'uploads/goods/m2.jpg'],
+    images: ['uploads/goods/m1.jpg','uploads/goods/m2.jpg'],
   },
   {
     name: '新鲜苹果',
