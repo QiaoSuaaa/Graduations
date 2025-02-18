@@ -41,7 +41,7 @@ const tokenMiddleware = (app) => {
         /^\/auth\/register/, // 注册接口无需校验 Token
         /^\/invite\/add/, // 注册接口无需校验 Token
         /^\/character\/list/, // 身份接口无需校验 Token
-        /^\/src\/uploads\/goods/, // 身份接口无需校验 Token
+        /^\/uploads\/goods/, // 身份接口无需校验 Token
       ],
     })
   );
