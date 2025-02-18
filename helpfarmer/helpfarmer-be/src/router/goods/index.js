@@ -302,7 +302,7 @@ router.post('/uploadImage', upload.single('file'), async (ctx) => {
     }
 
     // 返回图片的 URL
-    const imageUrl = `http://localhost:3000/uploads/goods/${ctx.file.filename}`;
+    const imageUrl = `http://localhost:3000/${ctx.file.filename}`;
     ctx.status = 200;
     ctx.body = {
       success: true,

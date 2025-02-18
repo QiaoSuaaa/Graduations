@@ -3,19 +3,16 @@ const bodyParser = require('koa-bodyparser');
 const cors = require('@koa/cors');
 const { koaBody } = require('koa-body');
 const koaStatic = require('koa-static');
-const path = require('path')
+const path = require('path');
 const connectDB = require('./db/index.js');
 const registerRouter = require('./router/index.js');
 const Router = require('@koa/router');
 const app = new Koa();
 const { tokenMiddleware, catchAuthError } = require('./helpers/token');
 //图片静态资源
-const staticPath = path.join(__dirname, './uploads/goods');
-
-
-
+const staticPath = path.join(__dirname, 'uploads/goods');
 // 连接到 MongoDB 数据库
-connectDB().then(() => {
+connectDB().then((gfs) => {
   app.use(cors()); // 允许跨域请求
   app.use(koaBody());
   app.use(koaStatic(staticPath));
