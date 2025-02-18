@@ -215,7 +215,6 @@ const uploadImage = async row => {
         const response = await goods.uploadImage(formData)
         row.imageUrl = response.data.url // 更新图片 URL
         console.log(row.imageUrl);
-        console.log('-000000000000000000');
         VxeUI.modal.message({ content: '图片上传成功', status: 'success' })
       } catch (error) {
         console.error('图片上传失败:', error)
