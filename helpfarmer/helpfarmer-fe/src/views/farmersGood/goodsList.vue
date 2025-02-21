@@ -39,7 +39,7 @@
           v-if="row.imageUrl"
           :src="row.imageUrl"
           alt="商品图片"
-          style="width: 50px; height: 50px"
+          style="width: 100px; height: 100px"
         />
         <vxe-button
           mode="text"
@@ -213,7 +213,7 @@ const uploadImage = async row => {
         const formData = new FormData()
         formData.append('file', file)
         const response = await goods.uploadImage(formData)
-        row.imageUrl = response.data.url // 更新图片 URL
+        row.imageUrl = response.data.images.url // 更新图片 URL
         console.log(row.imageUrl);
         VxeUI.modal.message({ content: '图片上传成功', status: 'success' })
       } catch (error) {
@@ -285,7 +285,10 @@ const loadDataForm = async rSize => {
     gridOptions.loading = false
   }
 }
-
+//获取图片
+const getUrl=async (params) {
+  
+}
 //更改加载行数
 const changeRowSizeEvent = () => {
   loadDataForm(selectRowSize.value)

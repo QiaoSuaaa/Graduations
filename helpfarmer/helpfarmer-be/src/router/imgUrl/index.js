@@ -10,12 +10,9 @@ const router = new Router({
   prefix: '/upload',
 });
 // 获取商品列表
-router.get('/goods/', async (ctx) => {
+router.get('/goods', async (ctx) => {
   try {
-    const imgUrl = await imgUrls.find()
-      .skip((pageNo - 1) * pageSize)
-      .limit(pageSize)
-      .exec();
+    const imgUrl = await imgUrls.find().exec();
     ctx.status = 200;
     ctx.body = { message: '商品图片获取成功', data: goodsList };
   } catch (error) {
