@@ -11,10 +11,10 @@ const goodsSchema = new mongoose.Schema({
   description: { type: String, required: true },
   
   // 商品图片（展示商品的真实情况）
-  images: [{ type: String }],
+  images: { type: String },
   
   // 生产地（例如：某省某市某村）
-  city: { type: String, required: true },
+  city: { type: String },
   
   // 商品价格（助农价格，单位为元）
   price: { type: Number, required: true },

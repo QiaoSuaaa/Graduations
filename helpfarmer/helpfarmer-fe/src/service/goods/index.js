@@ -45,8 +45,9 @@ export const deletes = id => {
   return instance.get(`/goods/delete/${id}`)
 }
 // 上传图片
+
 export const uploadImage = formData => {
-  return instance.post('/goods/uploadImage', formData, {
+  return instance.post('/goods/uploadimages', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

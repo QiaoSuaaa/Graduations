@@ -18,7 +18,7 @@ const initialGoods = [
     active: true,
     category: '粮食',
     certification: '有机认证',
-    images: ['uploads/goods/m1.jpg','uploads/goods/m2.jpg'],
+    images: 'http://localhost:3000/d7110b56-9154-492c-97e4-2d9d020c0ab1.jpg',
   },
   {
     name: '新鲜苹果',
@@ -32,7 +32,7 @@ const initialGoods = [
     active: true,
     category: '水果',
     certification: '绿色食品认证',
-    images: ['uploads/goods/a1.jpg', 'uploads/goods/a2.jpg'],
+    images: 'http://localhost:3000/d7110b56-9154-492c-97e4-2d9d020c0ab1.jpg',
   },
   {
     name: '有机蔬菜礼盒',
@@ -46,7 +46,7 @@ const initialGoods = [
     active: true,
     category: '蔬菜',
     certification: '有机认证',
-    images: ['uploads/goods/v1.jpg', 'uploads/goods/v2.jpg'],
+    images:'http://localhost:3000/d7110b56-9154-492c-97e4-2d9d020c0ab1.jpg',
   },
 ];
 

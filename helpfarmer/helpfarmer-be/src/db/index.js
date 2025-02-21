@@ -2,7 +2,7 @@ require('./Schema/goods');
 require('./Schema/user');
 require('./Schema/character')
 require('./Schema/inviteCode')
-require('./Schema/imgUrl')
+
 const mongoose = require('mongoose');
 
 const connectDB = async () => {

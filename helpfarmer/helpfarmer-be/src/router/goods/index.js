@@ -1,23 +1,30 @@
-
-
 const Router = require('@koa/router');
 const mongoose = require('mongoose');
-const { upload } = require('../uploadMiddleware'); // 引入 multer 中间件
-const imgUrls = require('../../db/Schema/imgUrl');
+const { upload } = require('../uploadMiddleware'); // 确保已配置multer
 const Goods = mongoose.model('Goods');
 
 const router = new Router({
   prefix: '/goods',
 });
 
-// 添加商品（支持图片上传）
+// 添加商品（增加图片处理）
 router.post('/add', upload.array('images', 5), async (ctx) => {
   try {
-    const { name, description, city, price, production, count, flag, active, category, certification } =
-      ctx.request.body;
+    const { 
+      name,
+      description,
+      city,
+      price,
+      production,
+      count,
+      flag,
+      active
+    } = ctx.request.body;
 
-    // 获取上传的图片路径
-    const images = ctx.files.map((file) => `uploads/goods/${file.filename}`);
+    // 处理上传的图片
+    const images = ctx.files?.map(file => 
+      `http://localhost:3000/uploads/${file.filename}`
+    ) || [];
 
     const goods = new Goods({
       name,
@@ -26,173 +33,120 @@ router.post('/add', upload.array('images', 5), async (ctx) => {
       price,
       production,
       count,
-      flag,
-      active,
-      category,
-      certification,
-      images, // 保存图片路径
+      flag: flag === 'true',  // 转换布尔值
+      active: active === 'true',
+      images
     });
 
     const res = await goods.save();
-    ctx.status = 201;
     ctx.body = {
-      data: res,
       code: 0,
-      msg: '商品添加成功',
+      data: {
+        ...res.toObject(),
+        images // 返回图片地址
+      },
+      msg: '商品添加成功'
     };
   } catch (error) {
     ctx.status = 500;
     ctx.body = {
       code: 1,
-      msg: '出现错误',
-      error: error.message,
+      msg: '添加失败: ' + error.message
     };
   }
 });
 
-// 获取商品列表
+// 获取列表（保持接口不变）
 router.get('/list', async (ctx) => {
   try {
-    const { 'pageNo[pageNo]': pageNo, 'pageNo[pageSize]': pageSize } = ctx.query;
-    const goodsList = await Goods.find()
+    const {'pageNo[pageNo]': pageNo, 'pageNo[pageSize]': pageSize} = ctx.query;
+    const data = await Goods.find()
       .skip((pageNo - 1) * pageSize)
-      .limit(pageSize)
-      .exec();
-    ctx.status = 200;
-    ctx.body = { message: '商品列表获取成功', data: goodsList };
+      .limit(Number(pageSize))
+      .lean();
+    
+    ctx.body = {
+      code: 0,
+      data: data,
+      msg: '查询成功'
+    };
   } catch (error) {
     ctx.status = 500;
-    ctx.body = { message: '出现错误', error: error.message };
+    ctx.body = {
+      code: 1,
+      msg: '查询失败: ' + error.message
+    };
   }
 });
 
-// 更新商品信息（支持图片更新）
+// 更新商品（增加图片处理）
 router.put('/update', upload.array('images', 5), async (ctx) => {
   try {
     const { _id, ...updateFields } = ctx.request.body;
 
-    if (!_id) {
-      ctx.status = 400;
-      ctx.body = {
-        success: false,
-        code: 1,
-        message: '缺少字段',
-      };
-      return;
+    // 处理新上传的图片
+    if (ctx.files?.length) {
+      updateFields.images = [
+        ...(updateFields.images ? JSON.parse(updateFields.images) : []),
+        ...ctx.files.map(f => `http://localhost:3000/uploads/${f.filename}`)
+      ];
     }
 
-    const existingGoods = await Goods.findOne({ _id: _id }).exec();
-    if (!existingGoods) {
-      ctx.status = 404;
-      ctx.body = { success: false, code: 1, message: '商品未找到' };
-      return;
-    }
+    const goods = await Goods.findByIdAndUpdate(
+      _id,
+      updateFields,
+      { new: true }
+    ).lean();
 
-    // 如果有新图片上传，更新图片路径
-    if (ctx.files && ctx.files.length > 0) {
-      const newImages = ctx.files.map((file) => `../../uploads/goods/${file.filename}`);
-      updateFields.images = newImages;
-    }
-
-    Object.assign(existingGoods, updateFields);
-    await existingGoods.save();
-
-    ctx.status = 200;
     ctx.body = {
-      success: true,
       code: 0,
-      message: '更新成功',
-      data: existingGoods,
+      data: goods,
+      msg: '更新成功'
     };
   } catch (error) {
-    console.error('更新失败:', error);
     ctx.status = 500;
     ctx.body = {
-      success: false,
       code: 1,
-      message: '服务器错误',
-      error: error.message,
+      msg: '更新失败: ' + error.message
     };
   }
 });
 
-// 删除商品
-router.get('/delete/:id', async (ctx) => {
-  try {
-    const { id } = ctx.params;
-    if (!id) {
-      ctx.status = 400;
-      ctx.body = {
-        success: false,
-        code: 1,
-        message: '缺少字段',
-      };
-      return;
-    }
-
-    const result = await Goods.deleteOne({ _id: id }).exec();
-    if (result.deletedCount === 0) {
-      ctx.status = 404;
-      ctx.body = {
-        success: false,
-        code: 1,
-        message: '找不到该商品',
-      };
-      return;
-    }
-
-    ctx.status = 200;
-    ctx.body = {
-      success: true,
-      code: 0,
-      message: '删除成功',
-    };
-  } catch (error) {
-    console.error('删除失败:', error);
-    ctx.status = 500;
-    ctx.body = {
-      success: false,
-      code: 1,
-      message: '服务器错误',
-      error: error.message,
-    };
-  }
-});
-// 上传图片接口
+// 上传图片接口（保持原有路径）
 router.post('/uploadImage', upload.single('file'), async (ctx) => {
   try {
     if (!ctx.file) {
       ctx.status = 400;
-      ctx.body = {
-        success: false,
-        code: 1,
-        message: '未上传文件',
-      };
+      ctx.body = { code: 1, msg: '请选择文件' };
       return;
     }
 
-    // 返回图片的 URL
-    const imageUrl = `http://localhost:3000/${ctx.file.filename}`;
-    const imgs= new imgUrls({
-      filepath:imageUrl
-    })
-    const res = await imgs.save();
-    ctx.status = 200;
     ctx.body = {
-      success: true,
       code: 0,
-      message: '图片上传成功',
-      url: imageUrl, // 返回图片的访问路径
+      data: {
+        url: `http://localhost:3000/uploads/${ctx.file.filename}`
+      },
+      msg: '上传成功'
     };
   } catch (error) {
-    console.error('图片上传失败:', error);
     ctx.status = 500;
     ctx.body = {
-      success: false,
       code: 1,
-      message: '图片上传失败',
-      error: error.message,
+      msg: '上传失败: ' + error.message
     };
   }
 });
+
+// 删除接口保持不变
+router.get('/delete/:id', async (ctx) => {
+  try {
+    const { id } = ctx.params;
+    await Goods.findByIdAndDelete(id);
+    ctx.body = { code: 0, msg: '删除成功' };
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { code: 1, msg: '删除失败' };
+  }
+});
+
 module.exports = router;
